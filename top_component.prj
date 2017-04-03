@@ -1,0 +1,3 @@
+vhdl work "ALU.vhd"
+vhdl work "accumulator.vhd"
+vhdl work "datapath.vhd"

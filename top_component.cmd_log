@@ -1,0 +1,2 @@
+xst -intstyle ise -ifn "D:/Maga/vhdl1/top_component.xst" -ofn "D:/Maga/vhdl1/top_component.syr" 
+xst -intstyle ise -ifn "D:/Maga/vhdl1/top_component.xst" -ofn "D:/Maga/vhdl1/top_component.syr" 

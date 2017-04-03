@@ -1,0 +1,1 @@
+-intstyle "ise" -incremental -lib "secureip" -o "D:/Maga/vhdl1/ram_test_isim_beh.exe" -prj "D:/Maga/vhdl1/ram_test_beh.prj" "work.ram_test" 
