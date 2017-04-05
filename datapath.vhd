@@ -42,8 +42,10 @@ architecture struct of alu_accum is
 
 component Accumulator is 
 	port( Clock : in STD_LOGIC; 
-		InPort : in STD_LOGIC_VECTOR(7 downto 0); 
-		OutPort : out STD_LOGIC_VECTOR(7 downto 0)); 
+		InPort : in STD_LOGIC_VECTOR(7 downto 0);
+		OutPort : out STD_LOGIC_VECTOR(7 downto 0);
+		RamOutPort : out STD_LOGIC_VECTOR(7 downto 0); --port for writing data to RAM
+		RamOutAddressPort : out STD_LOGIC_VECTOR(7 downto 0) ); -- RAM address for writing that data		
 end component; 
 
 component ALU is 

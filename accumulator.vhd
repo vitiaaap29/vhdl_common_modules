@@ -32,7 +32,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity Accumulator is
     Port ( Clock : in STD_LOGIC;
            InPort : in STD_LOGIC_VECTOR(7 downto 0);
-           OutPort : out STD_LOGIC_VECTOR(7 downto 0));
+           OutPort : out STD_LOGIC_VECTOR(7 downto 0);
+			  RamOutPort : out STD_LOGIC_VECTOR(7 downto 0); --port for writing data to RAM
+			  RamOutAddressPort : out STD_LOGIC_VECTOR(7 downto 0) ); -- RAM address for writing that data
 end Accumulator;
 
 architecture Behavioral of Accumulator is
