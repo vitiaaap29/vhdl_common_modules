@@ -50,16 +50,20 @@ begin
 			when "100" => Output <= A + B;
 			when "101" => Output <= A - B;
 			when "110" => Output <= A + 1;
-			when "111" => 
-				Output(0) <= A > B; --Need stadndalone process 
+--			when "111" => Output(0) <= A > B; --Need stadndalone process.
 			when others => Output <= A - 1;
 		end case;
 	end process;
 	
-	status_change: process(Selector, output)
-	begin
-		if Selector = "111" then
-			Status(0) <= output(0);
-		end if;
-	end process;
+--	status_change: process(Selector, output)
+--	begin
+--		if Selector = "111" then
+--			Status(0) <= output(0);
+--		end if;
+--	end process;
 end Behavioral;
+
+--Line 53: found '0' definitions of operator ">", cannot determine exact overloaded matching definition for ">"
+--Line 61: Cannot read from 'out' object output ; use 'buffer' or 'inout'
+--Line 58: output with mode 'out' cannot be readVHDL file C:/MyData/Stas/code/vhdl_common_modules/ALU.vhd ignored due to errors
+--Line 41: Unit <behavioral> ignored due to previous errors.
