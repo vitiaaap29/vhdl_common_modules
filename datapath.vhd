@@ -30,15 +30,15 @@ use ieee.std_logic_unsigned.all;
 --library UNISIM; 
 --use UNISIM.VComponents.all; 
 
-entity datapath is 
+entity alu_accum is 
 	port( Clock_in : in STD_LOGIC; 
 		Selector_in : in STD_LOGIC_VECTOR(2 DOWNTO 0); 
 		ram_in: in std_logic_vector(7 downto 0); 
 		data_pass_out: out std_logic_vector(7 downto 0) 
 	); 
-end datapath; 
+end alu_accum; 
 
-architecture struct of top_component is 
+architecture struct of alu_accum is 
 
 component Accumulator is 
 	port( Clock : in STD_LOGIC; 
