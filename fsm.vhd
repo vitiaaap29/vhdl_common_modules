@@ -158,6 +158,17 @@ begin
 			end if;
 		end if;
 	end process;
+	
+	control_instruction_register: process(rst, next_state, instruction_register)
+	begin
+		if rst = "1" then
+			operation_type <= "000";
+			RA <= "00000000";
+		elsif next_state = decode_st then
+			operation_type <= instruction_register(10 downto 8);
+			RA <= instruction_register(7 downto 0);
+		end if;
+	end process;
 
 end Behavioral;
 
