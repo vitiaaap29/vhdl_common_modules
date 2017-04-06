@@ -45,7 +45,6 @@ component Accumulator is
 		InPort : in STD_LOGIC_VECTOR(7 downto 0);
 		LoadPort: in STD_LOGIC_VECTOR(7 downto 0);--port for LOAD operation
 		OutPort : out STD_LOGIC_VECTOR(7 downto 0);
-		RamOutPort : out STD_LOGIC_VECTOR(7 downto 0); --port for writing data to RAM
 		RamOutAddressPort : out STD_LOGIC_VECTOR(7 downto 0) ); -- RAM address for writing that data		
 end component; 
 
