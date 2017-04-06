@@ -1,22 +1,3 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date:    23:08:24 04/02/2017 
--- Design Name: 
--- Module Name:    fsm - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
-----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
@@ -35,10 +16,14 @@ entity fsm is
 		compare_status: in STD_LOGIC;
 		datapath_output: in STD_LOGIC_VECTOR;
 		
-		ram_write_enable: out std_logic;
+		ram_rw: out std_logic;
 		ram_addr: std_logic_vector(7 downto 0);
 		ram_data_in: std_logic_vector(7 downto 0);
-		ram_data_in: std_logic_vector(7 downto 0);
+		ram_data_out: std_logic_vector(7 downto 0);
+		
+		rom_re: out std_logic_vector;
+		rom_adr: out std_logic_vector(7 downto 0);
+		rom_dout: in std_logic_vector(7 downto 0);
 		
 		dp_operand: out std_logic_vector(7 downto 0);
 		dp_ot: out std_logic_vector(2 downto 0);
@@ -159,6 +144,8 @@ begin
 		end if;
 	end process;
 	
+	rom_adr <= pc;
+	
 	control_instruction_register: process(rst, next_state, instruction_register)
 	begin
 		if rst = "1" then
@@ -169,6 +156,46 @@ begin
 			RA <= instruction_register(7 downto 0);
 		end if;
 	end process;
+	
+	ram_adr <= RA;
+	
+	rom_enable: process(next_state, state)
+	begin
+		if next_state = FETCH OR state = FETCH then
+			rom_re <= "1";
+		else
+			rom_re <= "0";
+		end if;
+	end process;
+	
+	rom_read_data: process(rst, state, rom_dout)
+	begin
+		if rst = "1" then
+			insturction_register <= "00000000";
+		elsif state = fetch_st then
+			insturction_register <= rom_dout;
+		end if;
+	end process;
+	
+	ram_read: process(state)
+	begin
+		if state = store_st then
+			ram_rw <= "0";
+		else
+			ram_rw <= "1";
+		end if;
+	end process;
+	
+	ram_data_control: process(state)
+	begin
+		if state = read_ram_st then
+			RD <= ram_dout;
+		end if;
+	end process;
+	
+	ram_din <= dp_res;
+	dp_operand <= RD;
+	dp_ot <= operation_type;
 
 end Behavioral;
 
