@@ -71,7 +71,9 @@ architecture Behavioral of fsm is
 	signal instruction_register: STD_LOGIC_VECTOR(10 downto 0);
 	signal pc: std_logic_vector(7 downto 0); --index in rom
 	signal operation_type: std_logic_vector(2 downto 0);
-	signal before_read_operation_type: std_logic_vector(3 downto 0);
+	
+	signal RA: std_logic_vector(7 downto 0);
+	signal RD: std_logic_vector(7 downto 0);
 	
 	constant SUB: std_logic_vector(2 downto 0) := "000";
 	constant STORE: std_logic_vector(2 downto 0) := "001";
@@ -142,31 +144,19 @@ begin
 		end if;
 	end process; 
 	
-	output_logic: process(state)--can we change a state?
+	prog_counter: process(clk, rst, state)
 	begin
-		case state is
-			when fetch_st =>
-				--instruction_register <= rom_micro_prog(to_integer(unsigned(pc))); where is beter sie? here? or in 69 line
-			when read_ram_st =>
-				ram_addr <= instruction_register(7 downto 0);
-				write_enable <= '0';
-			when alu_calc_st =>
-				case before_read_ram_st is 
-					when "000" => --sub OT
-						alu_selector <= "101";
-					when "011" => --inc OT
-						alu_selector <= "110";
-					when "100" => --cmp
-						alu_selector <= "111";
-				end case;
-				pc <= pc + 1;
-			when je_st =>
-				if compare_status = '1' then
-					pc <= pc + instruction_register(7 downto 0);
+		if rst = "1" then
+			pc <= "00000000";
+		elsif falling_edge(clk) then
+			if state = decode_st then
+				if operation_type = JE then
+					pc <= pc + RA;
 				else
 					pc <= pc + 1;
-				end if; 
-		end case;
+				end if;
+			end if;
+		end if;
 	end process;
 
 end Behavioral;
