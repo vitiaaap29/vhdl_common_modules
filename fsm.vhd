@@ -80,53 +80,49 @@ begin
 
 	next_state: process(cur_state, start, operation_type)
 	begin
-		if reset = "1" then
-			next_state <= fetch_st;
-		else
-			case cur_state is
-				when idle_st =>
-					if start = "1" then
-						next_state <= fetch_st;
-					else
-						next_state <= idle_st;
-					end if;
-				when fetch_st =>
-					next_state <= decode_st;
-				when decode_st =>
-					if operation_type = HALT then
-						next_state <= halt_st;
-					elsif operation_type = STORE then
-						next_state <= store_st;
-					elsif operation_type = JE then
-						next_state <= je_st;
-					elsif operation_type = INC then
-						next_state <= inc_st;
-					else 
-						next_state <= read_ram_st;
-					end if;
-				when halt_st =>
+		case cur_state is
+			when idle_st =>
+				if start = "1" then
+					next_state <= fetch_st;
+				else
+					next_state <= idle_st;
+				end if;
+			when fetch_st =>
+				next_state <= decode_st;
+			when decode_st =>
+				if operation_type = HALT then
 					next_state <= halt_st;
-				when read_ram_st =>
-					case operation_type is
-						when SUB =>
-							next_state <= sub_st;
-						when CMP =>
-							next_state <= cpm_st;
-						when JE =>
-							next_state <= je_st;
-						when LOAD_BY_ACC =>
-							next_state <= load_by_acc_st;
-						when LOAD =>
-							next_state <= load_st;
-						when others =>
-							next_state <= idle_st;
-					end case;
-				when je_st =>
-					state <= fetch_st;
-				when others =>
-					state <= fetch_st;
-			end case;	
-		end if;
+				elsif operation_type = STORE then
+					next_state <= store_st;
+				elsif operation_type = JE then
+					next_state <= je_st;
+				elsif operation_type = INC then
+					next_state <= inc_st;
+				else 
+					next_state <= read_ram_st;
+				end if;
+			when halt_st =>
+				next_state <= halt_st;
+			when read_ram_st =>
+				case operation_type is
+					when SUB =>
+						next_state <= sub_st;
+					when CMP =>
+						next_state <= cpm_st;
+					when JE =>
+						next_state <= je_st;
+					when LOAD_BY_ACC =>
+						next_state <= load_by_acc_st;
+					when LOAD =>
+						next_state <= load_st;
+					when others =>
+						next_state <= idle_st;
+				end case;
+			when je_st =>
+				state <= fetch_st;
+			when others =>
+				state <= fetch_st;
+		end case;	
 	end process; 
 	
 	prog_counter: process(clk, rst, state)
@@ -196,6 +192,15 @@ begin
 	ram_din <= dp_res;
 	dp_operand <= RD;
 	dp_ot <= operation_type;
+	
+	accumulator_enable_controler: process(state)
+	begin
+		if (state = inc_st or state = sub_st or state = load_st) then
+			dp_en <= '1';
+		else
+			dp_en <= '0';
+		end if;
+	end process;
 
 end Behavioral;
 
