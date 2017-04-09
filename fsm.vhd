@@ -69,9 +69,11 @@ architecture Behavioral of fsm is
 	constant LOAD_BY_ACC: std_logic_vector(2 downto 0) := "110";
 	constant LOAD: std_logic_vector(2 downto 0) := "111";
 begin
+	
+
 	sync_memory: process(clock, rst, next_state)
 	begin
-		if rst = "1" then
+		if rst = '1' then
 			state <= idle_st;
 		elsif rising_edge(clock) then
 			state <= next_state;
@@ -82,7 +84,7 @@ begin
 	begin
 		case cur_state is
 			when idle_st =>
-				if start = "1" then
+				if start = '1' then
 					next_state <= fetch_st;
 				else
 					next_state <= idle_st;
@@ -109,8 +111,8 @@ begin
 						next_state <= sub_st;
 					when CMP =>
 						next_state <= cpm_st;
-					when JE =>
-						next_state <= je_st;
+--					when JE => TODO: think about it with guys
+--						next_state <= je_st;
 					when LOAD_BY_ACC =>
 						next_state <= load_by_acc_st;
 					when LOAD =>
@@ -127,7 +129,7 @@ begin
 	
 	prog_counter: process(clk, rst, state)
 	begin
-		if rst = "1" then
+		if rst = '1' then
 			pc <= "00000000";
 		elsif falling_edge(clk) then
 			if state = decode_st then
@@ -144,7 +146,7 @@ begin
 	
 	control_instruction_register: process(rst, next_state, instruction_register)
 	begin
-		if rst = "1" then
+		if rst = '1' then
 			operation_type <= "000";
 			RA <= "00000000";
 		elsif next_state = decode_st then
@@ -158,15 +160,15 @@ begin
 	rom_enable: process(next_state, state)
 	begin
 		if next_state = FETCH OR state = FETCH then
-			rom_re <= "1";
+			rom_re <= '1';
 		else
-			rom_re <= "0";
+			rom_re <= '0';
 		end if;
 	end process;
 	
 	rom_read_data: process(rst, state, rom_dout)
 	begin
-		if rst = "1" then
+		if rst = '1' then
 			insturction_register <= "00000000";
 		elsif state = fetch_st then
 			insturction_register <= rom_dout;
@@ -176,9 +178,9 @@ begin
 	ram_read: process(state)
 	begin
 		if state = store_st then
-			ram_rw <= "0";
+			ram_rw <= '0';
 		else
-			ram_rw <= "1";
+			ram_rw <= '1';
 		end if;
 	end process;
 	
