@@ -13,8 +13,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity fsm is
     Port (
 		clock, rst, start : in  STD_LOGIC;
-		compare_status: in STD_LOGIC;
-		datapath_output: in STD_LOGIC_VECTOR;
+		datapath_output: in STD_LOGIC_VECTOR(7 downto 0);
 		
 		ram_rw: out std_logic;
 		ram_addr: std_logic_vector(7 downto 0);
@@ -32,20 +31,7 @@ entity fsm is
 		alu_selector : out  STD_LOGIC_VECTOR (2 downto 0));
 end fsm;
 
-	--RAM
-	--adr  value
-	--0x00 0x10
-	--0x01 0x15 end adr array
-	--...
-	--0x10 0xAA
-	--...
-	--0x15 0x39 last array number
-
 architecture Behavioral of fsm is
---		0 => "11100000000", --load cur_adr => cur_adr = 0x00 cur_adr in RAM => acc = [cur_adr]
---		1 => "11010000000", --load_by_acc
---		2 => "00010100",
-
 	type STATE_TYPES is (
 		idle_st,
 		fetch_st, decode_st, read_ram_st, sub_st, store_st,
@@ -60,6 +46,8 @@ architecture Behavioral of fsm is
 	signal RA: std_logic_vector(7 downto 0);
 	signal RD: std_logic_vector(7 downto 0);
 	
+	signal compare_status: std_logic;
+	
 	constant SUB: std_logic_vector(2 downto 0) := "000";
 	constant STORE: std_logic_vector(2 downto 0) := "001";
 	constant INC: std_logic_vector(2 downto 0) := "010";
@@ -69,7 +57,6 @@ architecture Behavioral of fsm is
 	constant LOAD_BY_ACC: std_logic_vector(2 downto 0) := "110";
 	constant LOAD: std_logic_vector(2 downto 0) := "111";
 begin
-	
 
 	sync_memory: process(clock, rst, next_state)
 	begin
@@ -111,8 +98,6 @@ begin
 						next_state <= sub_st;
 					when CMP =>
 						next_state <= cpm_st;
---					when JE => TODO: think about it with guys
---						next_state <= je_st;
 					when LOAD_BY_ACC =>
 						next_state <= load_by_acc_st;
 					when LOAD =>
@@ -133,7 +118,8 @@ begin
 			pc <= "00000000";
 		elsif falling_edge(clk) then
 			if state = decode_st then
-				if operation_type = JE then
+				compare_status <= datapath_output(0);
+				if operation_type = JE and compare_status = '1' then
 					pc <= pc + RA;
 				else
 					pc <= pc + 1;
