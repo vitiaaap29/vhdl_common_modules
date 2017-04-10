@@ -13,7 +13,6 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity fsm is
     Port (
 		clock, rst, start : in  STD_LOGIC;
-		datapath_output: in STD_LOGIC_VECTOR(7 downto 0);
 		
 		ram_rw: out std_logic;
 		ram_addr: std_logic_vector(7 downto 0);
@@ -27,8 +26,7 @@ entity fsm is
 		dp_operand: out std_logic_vector(7 downto 0);
 		dp_ot: out std_logic_vector(2 downto 0);
 		dp_res: in std_logic_vector(7 downto 0);
-		dp_en: out std_logic;
-		alu_selector : out  STD_LOGIC_VECTOR (2 downto 0));
+		dp_en: out std_logic);
 end fsm;
 
 architecture Behavioral of fsm is
@@ -118,7 +116,7 @@ begin
 			pc <= "00000000";
 		elsif falling_edge(clk) then
 			if state = decode_st then
-				compare_status <= datapath_output(0);
+				compare_status <= dp_res(0);
 				if operation_type = JE and compare_status = '1' then
 					pc <= pc + RA;
 				else

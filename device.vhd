@@ -16,12 +16,12 @@ entity device is
            Clock : in  STD_LOGIC);
 end device;
 
-architecture Behavioral of device is
+architecture SturcutalDevice of device is
 
 component fsm is 
 	Port (
 		clock, rst, start : in  STD_LOGIC;
-		datapath_output: in STD_LOGIC_VECTOR(7 downto 0);
+		-- Need we out clock from fsm?
 		
 		ram_rw: out std_logic;
 		ram_addr: std_logic_vector(7 downto 0);
@@ -36,7 +36,6 @@ component fsm is
 		dp_ot: out std_logic_vector(2 downto 0);
 		dp_res: in std_logic_vector(7 downto 0);
 		dp_en: out std_logic;
-		alu_selector : out  STD_LOGIC_VECTOR (2 downto 0)); 
 end component; 
 
 component rom is
@@ -55,16 +54,54 @@ component ram is
 end component;
 
 component alu_accum is
-	port( Clock_in : in STD_LOGIC; 
+	port(
+		Clock_in : in STD_LOGIC; 
 		Selector_in : in STD_LOGIC_VECTOR(2 DOWNTO 0); 
 		ram_in: in std_logic_vector(7 downto 0); 
 		data_pass_out: out std_logic_vector(7 downto 0) 
 	);
 end component;
 
-signal datapath_out_to_fsm: std_logic_vector(7 downto 0
+signal datapath_out_to_fsm: std_logic_vector(7 downto 0);
+signal clock_fsm_to_datapath: std_logic; --?
+signal fsm_dp_ot_to_datapath_selector: std_logic_vector(2 downto 0);
+signal fsm_dp_oper_to_datapath_ram_in: std_logic_vector(7 downto 0);
+signal fsm_rw_to_ram_we: std_logic;
 
 begin
 
-end Behavioral;
+fsm_pm: fsm port map(
+	Clock =>	clock, 
+	Reset => rst, 
+	Start => start,
+	datapath_out_to_fsm => dp_res, --in
+	fsm_rw_to_ram_we => ram_rw, --out
+		ram_addr: std_logic_vector(7 downto 0);
+		ram_data_in: std_logic_vector(7 downto 0);
+		ram_data_out: std_logic_vector(7 downto 0);
+		
+		rom_re: out std_logic_vector;
+		rom_adr: out std_logic_vector(7 downto 0);
+		rom_dout: in std_logic_vector(7 downto 0);
+		
+	fsm_dp_oper_to_datapath_ram_in => dp_operand, --out
+	fsm_dp_ot_to_datapath_selector => dp_ot, --out
+	dp_en: out std_logic); 
+);
+
+ram_pm: ram port map(
+	fsm_rw_to_ram_we => RW, --in
+	Address : in STD_LOGIC_VECTOR(4 downto 0);
+	DataIn : in STD_LOGIC_VECTOR(7 downto 0);
+	DataOut : out STD_LOGIC_VECTOR(7 downto 0)
+);
+
+datapath_pm: alu_accum port map(
+	Clock => Clock_in, --in ?
+	fsm_dp_ot_to_datapath_selector => Selector_in, --in 
+	ram_in: in std_logic_vector(7 downto 0); 
+	datapath_out_to_fsm => data_pass_out, --out
+);
+
+end SturcutalDevice;
 

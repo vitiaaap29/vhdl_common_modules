@@ -31,7 +31,8 @@ use ieee.std_logic_unsigned.all;
 --use UNISIM.VComponents.all; 
 
 entity alu_accum is 
-	port( Clock_in : in STD_LOGIC; 
+	port(
+		Clock_in : in STD_LOGIC; 
 		Selector_in : in STD_LOGIC_VECTOR(2 DOWNTO 0); 
 		ram_in: in std_logic_vector(7 downto 0); 
 		data_pass_out: out std_logic_vector(7 downto 0) 
