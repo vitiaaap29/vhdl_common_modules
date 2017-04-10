@@ -24,9 +24,9 @@ component fsm is
 		-- Need we out clock from fsm?
 		
 		ram_rw: out std_logic;
-		ram_addr: std_logic_vector(7 downto 0);
-		ram_data_in: std_logic_vector(7 downto 0);
-		ram_data_out: std_logic_vector(7 downto 0);
+		ram_addr out: std_logic_vector(7 downto 0);
+		ram_dout in : std_logic_vector(7 downto 0);
+		ram_din out: std_logic_vector(7 downto 0);
 		
 		rom_re: out std_logic_vector;
 		rom_adr: out std_logic_vector(7 downto 0);
@@ -76,24 +76,26 @@ fsm_pm: fsm port map(
 	Start => start,
 	datapath_out_to_fsm => dp_res, --in
 	fsm_rw_to_ram_we => ram_rw, --out
-		ram_addr: std_logic_vector(7 downto 0);
-		ram_data_in: std_logic_vector(7 downto 0);
-		ram_data_out: std_logic_vector(7 downto 0);
-		
-		rom_re: out std_logic_vector;
-		rom_adr: out std_logic_vector(7 downto 0);
-		rom_dout: in std_logic_vector(7 downto 0);
+--	ram_rw: out std_logic;
+--	ram_addr out: std_logic_vector(7 downto 0);
+--	ram_dout in : std_logic_vector(7 downto 0);
+--	ram_din out: std_logic_vector(7 downto 0);
+--		
+--		rom_re: out std_logic_vector;
+--		rom_adr: out std_logic_vector(7 downto 0);
+--		rom_dout: in std_logic_vector(7 downto 0);
 		
 	fsm_dp_oper_to_datapath_ram_in => dp_operand, --out
 	fsm_dp_ot_to_datapath_selector => dp_ot, --out
-	dp_en: out std_logic); 
+--	dp_en: out std_logic
+	); 
 );
 
 ram_pm: ram port map(
 	fsm_rw_to_ram_we => RW, --in
-	Address : in STD_LOGIC_VECTOR(4 downto 0);
-	DataIn : in STD_LOGIC_VECTOR(7 downto 0);
-	DataOut : out STD_LOGIC_VECTOR(7 downto 0)
+--	Address : in STD_LOGIC_VECTOR(4 downto 0);
+--	DataIn : in STD_LOGIC_VECTOR(7 downto 0);
+--	DataOut : out STD_LOGIC_VECTOR(7 downto 0)
 );
 
 datapath_pm: alu_accum port map(

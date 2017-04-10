@@ -15,9 +15,9 @@ entity fsm is
 		clock, rst, start : in  STD_LOGIC;
 		
 		ram_rw: out std_logic;
-		ram_addr: std_logic_vector(7 downto 0);
-		ram_data_in: std_logic_vector(7 downto 0);
-		ram_data_out: std_logic_vector(7 downto 0);
+		ram_addr out: std_logic_vector(7 downto 0);
+		ram_dout in : std_logic_vector(7 downto 0);
+		ram_din out: std_logic_vector(7 downto 0);
 		
 		rom_re: out std_logic_vector;
 		rom_adr: out std_logic_vector(7 downto 0);
