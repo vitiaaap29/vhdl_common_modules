@@ -32,7 +32,8 @@ use ieee.std_logic_unsigned.all;
 
 entity datapath is 
 	port(
-		Clock_in : in STD_LOGIC; 
+		Reset_in : in STD_LOGIC;
+		WE_in : in STD_LOGIC; 		
 		Selector_in : in STD_LOGIC_VECTOR(2 DOWNTO 0); 
 		ram_in: in std_logic_vector(7 downto 0); 
 		data_pass_out: out std_logic_vector(7 downto 0) 
@@ -42,9 +43,10 @@ end datapath;
 architecture struct of datapath is 
 
 component Accumulator is 
-	port( Clock : in STD_LOGIC; 
-		InPort : in STD_LOGIC_VECTOR(7 downto 0);
-		OutPort : out STD_LOGIC_VECTOR(7 downto 0) );
+	port(	Reset : in STD_LOGIC;
+			  WE : in STD_LOGIC;
+           DataIn : in STD_LOGIC_VECTOR(7 downto 0);
+           DataOut : out STD_LOGIC_VECTOR(7 downto 0));
 end component; 
 
 component ALU is 
@@ -63,6 +65,6 @@ begin
 	ACC_to_ALU <= "00000000"; 
 
 	ALU_U: ALU port map(Selector_in, ram_in, ACC_to_ALU, ALU_to_ACC); 
-	ACC_U: Accumulator port map(Clock_in, ALU_to_ACC, ACC_to_ALU); 
+	ACC_U: Accumulator port map(Reset_in, WE_in, ALU_to_ACC, ACC_to_ALU); 
 
 end struct;

@@ -13,7 +13,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity fsm is
     Port (
-		clock, rst, start : in  STD_LOGIC;
+		stop, clock, rst, start : in  STD_LOGIC;
 		
 		ram_rw: out std_logic;
 		ram_addr: out std_logic_vector(4 downto 0);
@@ -27,7 +27,8 @@ entity fsm is
 		dp_operand: out std_logic_vector(7 downto 0);
 		dp_ot: out std_logic_vector(2 downto 0);
 		dp_res: in std_logic_vector(7 downto 0);
-		dp_en: out std_logic);
+		dp_en: out std_logic;
+		dp_reset: out std_logic);
 end fsm;
 
 architecture Behavioral of fsm is
@@ -42,7 +43,7 @@ architecture Behavioral of fsm is
 	signal pc: std_logic_vector(3 downto 0); --index in rom
 	signal operation_type: std_logic_vector(2 downto 0);
 	
-	signal RA: std_logic_vector(7 downto 0);
+	signal RA: std_logic_vector(4 downto 0);
 	signal RD: std_logic_vector(7 downto 0);
 	
 	signal compare_status: std_logic;
@@ -133,7 +134,7 @@ begin
 	begin
 		if rst = '1' then
 			operation_type <= "000";
-			RA <= "00000000";
+			RA <= "00000";
 		elsif next_state = decode_st then
 			operation_type <= instruction_register(10 downto 8);
 			RA <= instruction_register(7 downto 0);

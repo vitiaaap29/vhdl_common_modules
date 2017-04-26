@@ -81,9 +81,18 @@ BEGIN
    -- Stimulus process
    stim_proc: process
    begin		
-		
-
-      wait;
+		Reset <= '1';
+		wait for 10ns;
+		Reset <='0';
+		wait for 10ns;
+		Start <='1';
+		wait for 10ns;
+		Clock <='1';
+		wait for 10ns;
+		Clock <='0';
+		wait for 10ns;
+		Clock <='1';
+		wait for 10ns;
    end process;
 
 END;

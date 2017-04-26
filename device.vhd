@@ -37,7 +37,8 @@ component fsm is
 		dp_operand: out std_logic_vector(7 downto 0);
 		dp_ot: out std_logic_vector(2 downto 0);
 		dp_res: in std_logic_vector(7 downto 0);
-		dp_en: out std_logic);
+		dp_en: out std_logic;
+		dp_reset: out std_logic);
 end component; 
 
 component rom is
@@ -57,7 +58,8 @@ end component;
 
 component datapath is
 	port(
-		Clock_in : in STD_LOGIC; 
+		Reset_in : in STD_LOGIC; 
+		WE_in : in STD_LOGIC; 
 		Selector_in : in STD_LOGIC_VECTOR(2 DOWNTO 0); 
 		ram_in: in std_logic_vector(7 downto 0); 
 		data_pass_out: out std_logic_vector(7 downto 0) 
@@ -71,7 +73,8 @@ signal clock_fsm_to_datapath: std_logic; --?
 signal fsm_dp_ot_to_datapath_selector: std_logic_vector(2 downto 0);
 signal fsm_dp_oper_to_datapath_ram_in: std_logic_vector(7 downto 0);
 signal datapath_out_to_fsm: std_logic_vector(7 downto 0);
-signal fsm_dp_en_to_datapath_en_clock: std_logic;
+signal fsm_dp_en_to_datapath_en: std_logic;
+signal fsm_dp_reset_to_datapath_reset_in: std_logic;
 
 --RAM connection signals
 signal fsm_rw_to_ram_we: std_logic;
@@ -108,7 +111,8 @@ Stop,
 	fsm_dp_ot_to_datapath_selector, --out
 --	dp_en: out std_logic
 	datapath_out_to_fsm,
-	fsm_dp_en_to_datapath_en_clock
+	fsm_dp_en_to_datapath_en,
+	fsm_dp_reset_to_datapath_reset_in
 	); 
 
 
@@ -126,7 +130,8 @@ rom_pm: rom port map(
 );
 
 datapath_pm: datapath port map(
-	fsm_dp_en_to_datapath_en_clock, --in ?
+	fsm_dp_reset_to_datapath_reset_in,
+	fsm_dp_en_to_datapath_en, --in ?
 	fsm_dp_ot_to_datapath_selector, --in 
 	fsm_dp_oper_to_datapath_ram_in,
 	datapath_out_to_fsm --out
