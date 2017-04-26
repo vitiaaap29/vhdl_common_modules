@@ -1,5 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -19,7 +20,7 @@ entity fsm is
 		ram_dout: in  std_logic_vector(7 downto 0);
 		ram_din: out std_logic_vector(7 downto 0);
 		
-		rom_re: out std_logic_vector;
+		rom_re: out std_logic;
 		rom_adr: out std_logic_vector(7 downto 0);
 		rom_dout: in std_logic_vector(7 downto 0);
 		
@@ -181,7 +182,7 @@ begin
 	
 	accumulator_enable_controler: process(cur_state)
 	begin
-		if (cur_state = inc_st or cur_state = sub_st cur_state = load_st) then
+		if (cur_state = inc_st or cur_state = sub_st or cur_state = load_st) then
 			dp_en <= '1';
 		else
 			dp_en <= '0';
