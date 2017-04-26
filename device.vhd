@@ -119,6 +119,12 @@ ram_pm: ram port map(
 	ram_dataout_to_fsm_ram_din 
 );
 
+rom_pm: rom port map(
+	fsm_rom_re_to_rom_re,
+	fsm_rom_adr_to_rom_adr,
+	rom_dout_to_fsm_rom_dout
+);
+
 datapath_pm: datapath port map(
 	fsm_dp_en_to_datapath_en_clock, --in ?
 	fsm_dp_ot_to_datapath_selector, --in 
