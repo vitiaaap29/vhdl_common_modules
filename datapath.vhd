@@ -59,8 +59,8 @@ signal ALU_to_ACC: std_logic_vector(7 downto 0);
 signal ACC_to_ALU: std_logic_vector(7 downto 0); 
 
 begin 
-	ALU_to_ACC <= "00000"; 
-	ACC_to_ALU <= "00000"; 
+	ALU_to_ACC <= "00000000"; 
+	ACC_to_ALU <= "00000000"; 
 
 	ALU_U: ALU port map(Selector_in, ram_in, ACC_to_ALU, ALU_to_ACC); 
 	ACC_U: Accumulator port map(Clock_in, ALU_to_ACC, ACC_to_ALU); 

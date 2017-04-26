@@ -16,13 +16,13 @@ entity fsm is
 		clock, rst, start : in  STD_LOGIC;
 		
 		ram_rw: out std_logic;
-		ram_addr: out std_logic_vector(7 downto 0);
+		ram_addr: out std_logic_vector(4 downto 0);
 		ram_dout: in  std_logic_vector(7 downto 0);
 		ram_din: out std_logic_vector(7 downto 0);
 		
 		rom_re: out std_logic;
-		rom_adr: out std_logic_vector(7 downto 0);
-		rom_dout: in std_logic_vector(7 downto 0);
+		rom_adr: out std_logic_vector(3 downto 0);
+		rom_dout: in std_logic_vector(10 downto 0);
 		
 		dp_operand: out std_logic_vector(7 downto 0);
 		dp_ot: out std_logic_vector(2 downto 0);
@@ -39,7 +39,7 @@ architecture Behavioral of fsm is
 	);
 	signal cur_state, next_state: STATE_TYPES;
 	signal instruction_register : std_logic_vector(10 downto 0);
-	signal pc: std_logic_vector(7 downto 0); --index in rom
+	signal pc: std_logic_vector(3 downto 0); --index in rom
 	signal operation_type: std_logic_vector(2 downto 0);
 	
 	signal RA: std_logic_vector(7 downto 0);
@@ -105,16 +105,16 @@ begin
 						next_state <= idle_st;
 				end case;
 			when je_st =>
-				cur_state <= fetch_st;
+				next_state <= fetch_st;
 			when others =>
-				cur_state <= fetch_st;
+				next_state <= fetch_st;
 		end case;	
 	end process; 
 	
 	prog_counter: process(clock, rst, cur_state)
 	begin
 		if rst = '1' then
-			pc <= "00000000";
+			pc <= "0000";
 		elsif falling_edge(clock) then
 			if cur_state = decode_st then
 				compare_status <= dp_res(0);
@@ -154,7 +154,7 @@ begin
 	rom_read_data: process(rst, cur_state, rom_dout)
 	begin
 		if rst = '1' then
-			instruction_register <= "00000000";
+			instruction_register <= "00000000000";
 		elsif cur_state = fetch_st then
 			instruction_register <= rom_dout;
 		end if;

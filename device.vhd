@@ -26,13 +26,13 @@ component fsm is
 		-- Need we out clock from fsm?
 		
 		ram_rw: out std_logic;
-		ram_addr: out std_logic_vector(7 downto 0);
+		ram_addr: out std_logic_vector(4 downto 0);
 		ram_dout: in std_logic_vector(7 downto 0);
 		ram_din: out std_logic_vector(7 downto 0);
 		
-		rom_re: out std_logic_vector;
-		rom_adr: out std_logic_vector(7 downto 0);
-		rom_dout: in std_logic_vector(7 downto 0);
+		rom_re: out std_logic;
+		rom_adr: out std_logic_vector(3 downto 0);
+		rom_dout: in std_logic_vector(10 downto 0);
 		
 		dp_operand: out std_logic_vector(7 downto 0);
 		dp_ot: out std_logic_vector(2 downto 0);
@@ -75,14 +75,14 @@ signal fsm_dp_en_to_datapath_en_clock: std_logic;
 
 --RAM connection signals
 signal fsm_rw_to_ram_we: std_logic;
-signal fsm_ram_addr_to_ram_address: STD_LOGIC_VECTOR(7 downto 0); --diff sizes
+signal fsm_ram_addr_to_ram_address: STD_LOGIC_VECTOR(4 downto 0);
 signal ram_dataout_to_fsm_ram_din: STD_LOGIC_VECTOR(7 downto 0);
 signal fsm_ram_dout_to_ram_datain: STD_LOGIC_VECTOR(7 downto 0);
 
 --ROM connection signals
-signal fsm_rom_re_to_rom_re: std_logic_vector;
-signal fsm_rom_adr_to_rom_adr: STD_LOGIC_VECTOR(3 downto 0); --diff sizes
-signal rom_dout_to_fsm_rom_dout: STD_LOGIC_VECTOR (10 downto 0); --diff sizes
+signal fsm_rom_re_to_rom_re: std_logic;
+signal fsm_rom_adr_to_rom_adr: STD_LOGIC_VECTOR(3 downto 0);
+signal rom_dout_to_fsm_rom_dout: STD_LOGIC_VECTOR (10 downto 0);
 
 begin
 
