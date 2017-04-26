@@ -1,5 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -13,20 +14,21 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity device is
     Port ( Start : in  STD_LOGIC;
            Reset : in  STD_LOGIC;
-           Clock : in  STD_LOGIC);
+           Clock : in  STD_LOGIC;
+			  Stop : in STD_LOGIC);
 end device;
 
 architecture SturcutalDevice of device is
 
 component fsm is 
 	Port (
-		clock, rst, start : in  STD_LOGIC;
+		stop, clock, rst, start : in  STD_LOGIC;
 		-- Need we out clock from fsm?
 		
 		ram_rw: out std_logic;
-		ram_addr out: std_logic_vector(7 downto 0);
-		ram_dout in : std_logic_vector(7 downto 0);
-		ram_din out: std_logic_vector(7 downto 0);
+		ram_addr: out std_logic_vector(7 downto 0);
+		ram_dout: in std_logic_vector(7 downto 0);
+		ram_din: out std_logic_vector(7 downto 0);
 		
 		rom_re: out std_logic_vector;
 		rom_adr: out std_logic_vector(7 downto 0);
@@ -35,7 +37,7 @@ component fsm is
 		dp_operand: out std_logic_vector(7 downto 0);
 		dp_ot: out std_logic_vector(2 downto 0);
 		dp_res: in std_logic_vector(7 downto 0);
-		dp_en: out std_logic;
+		dp_en: out std_logic);
 end component; 
 
 component rom is
@@ -53,7 +55,7 @@ component ram is
 		DataOut : out STD_LOGIC_VECTOR(7 downto 0));
 end component;
 
-component alu_accum is
+component datapath is
 	port(
 		Clock_in : in STD_LOGIC; 
 		Selector_in : in STD_LOGIC_VECTOR(2 DOWNTO 0); 
@@ -62,47 +64,66 @@ component alu_accum is
 	);
 end component;
 
-signal datapath_out_to_fsm: std_logic_vector(7 downto 0);
+
 signal clock_fsm_to_datapath: std_logic; --?
+
+--DataPath connection signals
 signal fsm_dp_ot_to_datapath_selector: std_logic_vector(2 downto 0);
 signal fsm_dp_oper_to_datapath_ram_in: std_logic_vector(7 downto 0);
+signal datapath_out_to_fsm: std_logic_vector(7 downto 0);
+signal fsm_dp_en_to_datapath_en_clock: std_logic;
+
+--RAM connection signals
 signal fsm_rw_to_ram_we: std_logic;
+signal fsm_ram_addr_to_ram_address: STD_LOGIC_VECTOR(7 downto 0); --diff sizes
+signal ram_dataout_to_fsm_ram_din: STD_LOGIC_VECTOR(7 downto 0);
+signal fsm_ram_dout_to_ram_datain: STD_LOGIC_VECTOR(7 downto 0);
+
+--ROM connection signals
+signal fsm_rom_re_to_rom_re: std_logic_vector;
+signal fsm_rom_adr_to_rom_adr: STD_LOGIC_VECTOR(3 downto 0); --diff sizes
+signal rom_dout_to_fsm_rom_dout: STD_LOGIC_VECTOR (10 downto 0); --diff sizes
 
 begin
 
 fsm_pm: fsm port map(
-	Clock =>	clock, 
-	Reset => rst, 
-	Start => start,
-	datapath_out_to_fsm => dp_res, --in
-	fsm_rw_to_ram_we => ram_rw, --out
---	ram_rw: out std_logic;
---	ram_addr out: std_logic_vector(7 downto 0);
---	ram_dout in : std_logic_vector(7 downto 0);
---	ram_din out: std_logic_vector(7 downto 0);
---		
---		rom_re: out std_logic_vector;
---		rom_adr: out std_logic_vector(7 downto 0);
---		rom_dout: in std_logic_vector(7 downto 0);
-		
-	fsm_dp_oper_to_datapath_ram_in => dp_operand, --out
-	fsm_dp_ot_to_datapath_selector => dp_ot, --out
+Stop,
+	Clock, 
+	Reset, 
+	Start,
+--	datapath_out_to_fsm => dp_res, --in
+
+--	fsm_rw_to_ram_we => ram_rw, --out
+--RAM
+	fsm_rw_to_ram_we,
+	fsm_ram_addr_to_ram_address,
+	ram_dataout_to_fsm_ram_din,
+	fsm_ram_dout_to_ram_datain,
+--ROM		
+	fsm_rom_re_to_rom_re,
+	fsm_rom_adr_to_rom_adr,
+	rom_dout_to_fsm_rom_dout,
+--DataPath		
+	fsm_dp_oper_to_datapath_ram_in, --out
+	fsm_dp_ot_to_datapath_selector, --out
 --	dp_en: out std_logic
+	datapath_out_to_fsm,
+	fsm_dp_en_to_datapath_en_clock
 	); 
-);
+
 
 ram_pm: ram port map(
-	fsm_rw_to_ram_we => RW, --in
---	Address : in STD_LOGIC_VECTOR(4 downto 0);
---	DataIn : in STD_LOGIC_VECTOR(7 downto 0);
---	DataOut : out STD_LOGIC_VECTOR(7 downto 0)
+	fsm_rw_to_ram_we, --in
+	fsm_ram_addr_to_ram_address,
+	fsm_ram_dout_to_ram_datain,
+	ram_dataout_to_fsm_ram_din 
 );
 
-datapath_pm: alu_accum port map(
-	Clock => Clock_in, --in ?
-	fsm_dp_ot_to_datapath_selector => Selector_in, --in 
-	ram_in: in std_logic_vector(7 downto 0); 
-	datapath_out_to_fsm => data_pass_out, --out
+datapath_pm: datapath port map(
+	fsm_dp_en_to_datapath_en_clock, --in ?
+	fsm_dp_ot_to_datapath_selector, --in 
+	fsm_dp_oper_to_datapath_ram_in,
+	datapath_out_to_fsm --out
 );
 
 end SturcutalDevice;
