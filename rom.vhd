@@ -20,7 +20,7 @@ end rom;
 
 architecture Behavioral of rom is
 subtype inst is std_logic_vector(10 downto 0);
-type tRom is array(0 to 15) of inst;
+type tRom is array(0 to 1) of inst; --normal size is 15
 
 --constant SUB: std_logic_vector(2 downto 0) := "000";
 --constant STORE: std_logic_vector(2 downto 0) := "001";
@@ -44,17 +44,19 @@ type tRom is array(0 to 15) of inst;
 
 constant ROM: tRom := (
 					  --loop: loop is adr in room
-	"111"&"00000000", --load cur_adr  --> acc <= RAM[cur_adr], acc = 0x10
-	"110"&"00000000", --load_by_acc   --> acc <= RAM[acc], acc = 0x1A
-	"000"&"00010000", --sub res_adr   --> acc <= RAM[result_adr] - acc, acc = -0x1A
-	"001"&"00010000", --store res_adr --> RAM[result_adr] <= acc; RAM[result_adr] = -0x1A, in DD 0x11110001
-	"111"&"00000000", --load cur_adr  --> acc <= RAM[cur_adr]; acc = 0x00
-	"010"&"00000000", --inc           --> acc <= acc++, acc = 0x01
-	"001"&"00000000", --store cur_adr --> RAM[cur_adr] <= acc, RAM[cur_adr] = 0x01
-	"111"&"00000000", --load cur_adr  --> acc = RAM[cur_adr], acc = 0x01
-	"011"&"00000000", --cmp end_adr   --> STATUS = end_adr > acc ? 1 : 0
-	"101"&"00000000", --je loop		 --> PC = loop if STATUS == 1 else PC++
-	"100"&"00000000"  --halt          --> end execution
+--	"111"&"00000000", --load cur_adr  --> acc <= RAM[cur_adr], acc = 0x10
+--	"110"&"00000000", --load_by_acc   --> acc <= RAM[acc], acc = 0x1A
+--	"000"&"00010000", --sub res_adr   --> acc <= RAM[result_adr] - acc, acc = -0x1A
+--	"001"&"00010000", --store res_adr --> RAM[result_adr] <= acc; RAM[result_adr] = -0x1A, in DD 0x11110001
+--	"111"&"00000000", --load cur_adr  --> acc <= RAM[cur_adr]; acc = 0x00
+--	"010"&"00000000", --inc           --> acc <= acc++, acc = 0x01
+--	"001"&"00000000", --store cur_adr --> RAM[cur_adr] <= acc, RAM[cur_adr] = 0x01
+--	"111"&"00000000", --load cur_adr  --> acc = RAM[cur_adr], acc = 0x01
+--	"011"&"00000000", --cmp end_adr   --> STATUS = end_adr > acc ? 1 : 0
+--	"101"&"00000000", --je loop		 --> PC = loop if STATUS == 1 else PC++
+--	"100"&"00000000"  --halt          --> end execution
+"111"&"00000000",
+"100"&"00000000"
 );
 
 signal current_instruction: inst;
