@@ -15,9 +15,9 @@ entity fsm is
 		clock, rst, start : in  STD_LOGIC;
 		
 		ram_rw: out std_logic;
-		ram_addr out: std_logic_vector(7 downto 0);
-		ram_dout in : std_logic_vector(7 downto 0);
-		ram_din out: std_logic_vector(7 downto 0);
+		ram_addr: out std_logic_vector(7 downto 0);
+		ram_dout: in  std_logic_vector(7 downto 0);
+		ram_din: out std_logic_vector(7 downto 0);
 		
 		rom_re: out std_logic_vector;
 		rom_adr: out std_logic_vector(7 downto 0);
@@ -36,8 +36,8 @@ architecture Behavioral of fsm is
 		inc_st, cmp_st, halt_st, je_st, load_st, load_by_acc_st, write_ram_st,
 		alu_calc_st
 	);
-	signal state, next_state: STATE_TYPES;
-	signal instruction_register: STD_LOGIC_VECTOR(10 downto 0);
+	signal cur_state, next_state: STATE_TYPES;
+	signal instruction_register : std_logic_vector(10 downto 0);
 	signal pc: std_logic_vector(7 downto 0); --index in rom
 	signal operation_type: std_logic_vector(2 downto 0);
 	
@@ -59,13 +59,13 @@ begin
 	sync_memory: process(clock, rst, next_state)
 	begin
 		if rst = '1' then
-			state <= idle_st;
+			cur_state <= idle_st;
 		elsif rising_edge(clock) then
-			state <= next_state;
+			cur_state <= next_state;
 		end if;
 	end process;
 
-	next_state: process(cur_state, start, operation_type)
+	next_state_proc: process(cur_state, start, operation_type)
 	begin
 		case cur_state is
 			when idle_st =>
@@ -95,7 +95,7 @@ begin
 					when SUB =>
 						next_state <= sub_st;
 					when CMP =>
-						next_state <= cpm_st;
+						next_state <= cmp_st;
 					when LOAD_BY_ACC =>
 						next_state <= load_by_acc_st;
 					when LOAD =>
@@ -104,18 +104,18 @@ begin
 						next_state <= idle_st;
 				end case;
 			when je_st =>
-				state <= fetch_st;
+				cur_state <= fetch_st;
 			when others =>
-				state <= fetch_st;
+				cur_state <= fetch_st;
 		end case;	
 	end process; 
 	
-	prog_counter: process(clk, rst, state)
+	prog_counter: process(clock, rst, cur_state)
 	begin
 		if rst = '1' then
 			pc <= "00000000";
-		elsif falling_edge(clk) then
-			if state = decode_st then
+		elsif falling_edge(clock) then
+			if cur_state = decode_st then
 				compare_status <= dp_res(0);
 				if operation_type = JE and compare_status = '1' then
 					pc <= pc + RA;
@@ -139,38 +139,38 @@ begin
 		end if;
 	end process;
 	
-	ram_adr <= RA;
+	ram_addr <= RA;
 	
-	rom_enable: process(next_state, state)
+	rom_enable: process(next_state, cur_state)
 	begin
-		if next_state = FETCH OR state = FETCH then
+		if next_state = fetch_st OR cur_state = fetch_st then
 			rom_re <= '1';
 		else
 			rom_re <= '0';
 		end if;
 	end process;
 	
-	rom_read_data: process(rst, state, rom_dout)
+	rom_read_data: process(rst, cur_state, rom_dout)
 	begin
 		if rst = '1' then
-			insturction_register <= "00000000";
-		elsif state = fetch_st then
-			insturction_register <= rom_dout;
+			instruction_register <= "00000000";
+		elsif cur_state = fetch_st then
+			instruction_register <= rom_dout;
 		end if;
 	end process;
 	
-	ram_read: process(state)
+	ram_read: process(cur_state)
 	begin
-		if state = store_st then
+		if cur_state = store_st then
 			ram_rw <= '0';
 		else
 			ram_rw <= '1';
 		end if;
 	end process;
 	
-	ram_data_control: process(state)
+	ram_data_control: process(cur_state)
 	begin
-		if state = read_ram_st then
+		if cur_state = read_ram_st then
 			RD <= ram_dout;
 		end if;
 	end process;
@@ -179,9 +179,9 @@ begin
 	dp_operand <= RD;
 	dp_ot <= operation_type;
 	
-	accumulator_enable_controler: process(state)
+	accumulator_enable_controler: process(cur_state)
 	begin
-		if (state = inc_st or state = sub_st or state = load_st) then
+		if (cur_state = inc_st or cur_state = sub_st cur_state = load_st) then
 			dp_en <= '1';
 		else
 			dp_en <= '0';
