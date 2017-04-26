@@ -1,6 +1,7 @@
 --By page 8 of Ivanuks's 14th lection for 5 cource of POIT
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -56,10 +57,10 @@ constant ROM: tRom := (
 	"100"&"00000000"  --halt          --> end execution
 );
 
-signal current_instuction: inst;
+signal current_instruction: inst;
 	
 begin
-current_instruction <= ROM(CONV_INTEGER(ADR));
+current_instruction <= ROM(to_integer(unsigned(ADR)));
 
 zbufs: process(RE, current_instruction)
 begin
